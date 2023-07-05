@@ -50,7 +50,7 @@ class GifMe(Plugin):
         sani = re.sub(r'(_|-|\.)', ' ', sani) # substitute common delimiters with normal spaces
         sani = re.sub(r'[^a-zA-Z0-9\s]', '', sani).lower() # strip out any other special characters and make lowercase
         return sani
-        
+
     async def get_giphy(self, evt: MessageEvent, query: str) -> None:
 
         #query = query.replace('"', '') # remove quotes to pass raw terms to giphy
@@ -101,7 +101,7 @@ class GifMe(Plugin):
 
         ## return an object with the necessary information to send a message
         return info
-    
+
 
     async def get_tenor(self, evt: MessageEvent, query: str) -> None:
 
@@ -110,7 +110,7 @@ class GifMe(Plugin):
         api_data = None
         info = {}
         imgdata = None
-        url_params = urllib.parse.urlencode({"q": query, "key": self.config["tenor_api_key"], 
+        url_params = urllib.parse.urlencode({"q": query, "key": self.config["tenor_api_key"],
                                              "limit": 5})
 
         ## first we get a json response from giphy with our query parameters
@@ -199,7 +199,7 @@ class GifMe(Plugin):
 
         row = await self.database.fetchrow(dbq, original)
         return row
-    
+
     async def delete_row(self, row: int) -> None:
         dbq = """
                 DELETE FROM responses WHERE docid = $1
@@ -274,7 +274,7 @@ class GifMe(Plugin):
                     pass
                 else:
                     difftags.append(t)
-                    
+
             if len(difftags) != 0:
                 updatemsg = await source_evt.reply(f"matching entry found, adding the following new tags: {difftags}")
                 updateevt = await self.client.get_event(source_evt.room_id, updatemsg)
@@ -322,7 +322,7 @@ class GifMe(Plugin):
                         <a href=\"mxorig://{info['original']}\"></a>\
                         </blockquote>"
 
-        await evt.respond(content=content, allow_html=True) 
+        await evt.respond(content=content, allow_html=True)
 
     @command.new(name=get_command_name, aliases=is_alias, help="save and tag, or return, message contents", require_subcommand=False,
                  arg_fallthrough=False)
@@ -375,14 +375,14 @@ class GifMe(Plugin):
                     return None
 
         await self.send_msg(evt, msg_info)
-        
+
         if self.config['say_already_saved'] and fallback_status <= 0:
             await evt.respond("<em>i found this in my personal archives, you don't need to save it again.</em>",
                               allow_html=True)
 
-        if fallback_status > 0:
-            await evt.respond("<em>psst... i found this on {provider}. be sure to save\
-                    it if it's any good.</em>".format(provider=self.config["allow_fallback"]), allow_html=True)
+        # if fallback_status > 0:
+        #     await evt.respond("<em>psst... i found this on {provider}. be sure to save\
+        #             it if it's any good.</em>".format(provider=self.config["allow_fallback"]), allow_html=True)
 
     @gifme.subcommand("giphy", help="use giphy to search for a gif without using the local collection")
 
@@ -392,7 +392,7 @@ class GifMe(Plugin):
             tags = "random"
         img_info = {}
         await evt.mark_read()
-        
+
         img_info = await self.get_giphy(evt, tags)
 
         await self.send_msg(evt, img_info)
@@ -406,7 +406,7 @@ class GifMe(Plugin):
             tags = "random"
         img_info = {}
         await evt.mark_read()
-        
+
         img_info = await self.get_tenor(evt, tags)
 
         await self.send_msg(evt, img_info)
